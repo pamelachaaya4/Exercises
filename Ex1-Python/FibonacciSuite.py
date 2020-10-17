@@ -2,6 +2,7 @@ import time, sys, os
 from tkinter import *
 N=0
 reset=False
+run=True
 MyWindow = Tk()
 MyWindow.geometry("600x400+300+200")
 MyWindow.title("La Suite de Fibonacci")
@@ -16,19 +17,31 @@ def FibonacciSuite(N):
     else:
         return (FibonacciSuite(N - 1) + FibonacciSuite(N - 2))
 def stop():
-    MyWindow.quit()
+    global run
+    run=False
+    startButton['command'] = start
+    startButton['bg'] = "green"
+    startButton['text'] = "Start"
 
 def display():
     #to display the Fibonacci Sequence
-    if reset is False:
-        global N
-        s=Label(frame,text=FibonacciSuite(N))
+    global run
+    global reset
+    global N
+    if reset is False and run is True:
+        s=Label(frame,text=FibonacciSuite(N),padx=40,pady=40)
         s.pack()
         N = N + 1
+        s.after(1000,s.destroy)
         changeFibo()
+        if run is False:
+            Label(frame, text=FibonacciSuite(N), padx=40, pady=40).pack()
+            s.after_cancel(changeFibo)
+
+
 
 def changeFibo():
-    frame.after(1000, display)
+    frame.after(1000,display)
 
 def wait():
     time.sleep(1)
@@ -42,16 +55,17 @@ def wait():
 def Reset():
     global reset
     global N
+    global run
     reset=True
+    run=False
     wait()
     N=0
-    startButton['command'] = stop
-    startButton['bg'] = "red"
-    startButton['text'] = "Stop"
 
 def start():
     """no loop can be used because otherwise
     it will interfere with the Window mainloop"""
+    global run
+    run=True
     startButton['command'] = stop
     startButton['bg'] = "red"
     startButton['text'] = "Stop"
